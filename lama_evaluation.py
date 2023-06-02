@@ -18,12 +18,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
-try:
-    results = pickle.load(open(f"/data_ssds/disk11/slinzbach/LAMA.p", "rb"))
-except:
-    results = {}
-
-print(results)
+dataset = 'GoogleRE' # 'TREx', 'CNET'
 model_name =  {'bert_both': "bert-base-cased",
                'roberta': "roberta-base",
                'luke': "studio-ousia/luke-base",
@@ -54,13 +49,13 @@ def get_model_environment(model_name):
     return tokenizer, model, mask, mask_id, vocab, vocab_words
 
 
-with open("./GoogleRE_data.json") as f:
+with open(f"./{dataset}_data.json") as f:
     data = json.load(f)
 
 with open("./common_vocab_cased.txt") as f:
     allowed_vocab = set([x[:-1] for x in f.readlines()])
 
-with open("./exclusion_information_googlere.json") as f:
+with open(f"./exclusion_information_{dataset}.json") as f:
     exclusion = json.load(f)
 
 allowed_letters = set()
@@ -472,7 +467,7 @@ for name, m in model_name.items():
                     acc[k][accs][t]['total'] = len([x for x in results[m][p]['subjects'] if x])
         results[m][p]['accuracy'] = acc.copy()
         results[m][p]['total'] = len([x for x in results[m][p]['subjects'] if x])
-        pickle.dump(results, open(f"/data_ssds/disk11/slinzbach/LAMA/results/GoogleRE/{name}/{p}.p", "wb"))
+        pickle.dump(results, open(f"/results/{dataset}/{name}/{p}.p", "wb"))
 
 
 #results = pickle.load(open(f"/data_ssds/disk11/slinzbach/LAMA/results/bert_both/P1001.p", "rb"))
